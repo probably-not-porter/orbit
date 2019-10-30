@@ -1,4 +1,5 @@
 import pygame
+import random
 
 pygame.init()
 pygame.display.set_caption('Orbit')
@@ -8,6 +9,13 @@ screen_height = 600
 
 # list for objects
 sat_ls = []
+stars_ls = []
+
+for x in range(random.randint(20,40)):
+    x_pos = random.randint(0,screen_width)
+    y_pos = random.randint(0,screen_height)
+    radius = random.randint(1,3)
+    stars_ls.append([x_pos,y_pos,radius])
 
 
 # data structure for objects
@@ -92,13 +100,16 @@ def main():
         if draw_line == True:
             pygame.draw.line(screen, (255,0,0), line_start, pygame.mouse.get_pos(), 2)
         # draw sun
-        pygame.draw.circle(screen, (50,50,50), (screen_width // 2, screen_height // 2), sun_radius+(count % 10)*3)
-        pygame.draw.circle(screen, (150,150,150), (screen_width // 2, screen_height // 2), sun_radius+(count % 5)*3)
-        pygame.draw.circle(screen, (200,200,200), (screen_width // 2, screen_height // 2), sun_radius+(count % 2)*3)
+        pygame.draw.circle(screen, (50,50,50), (screen_width // 2, screen_height // 2), sun_radius+(count % 10))
+        pygame.draw.circle(screen, (150,150,150), (screen_width // 2, screen_height // 2), sun_radius+(count % 5))
+        pygame.draw.circle(screen, (200,200,200), (screen_width // 2, screen_height // 2), sun_radius+(count % 2))
         pygame.draw.circle(screen, (255,255,255), (screen_width // 2, screen_height // 2), sun_radius)
 
-        # draw sats
+        # draw stars
+        for star in stars_ls:
+            pygame.draw.circle(screen, (150,150,150), (star[0],star[1]), star[2])
 
+        # draw sats
         if count < 11:
             count = count + 1
         else:
