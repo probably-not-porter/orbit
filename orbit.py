@@ -3,6 +3,8 @@ import random
 
 pygame.init()
 pygame.display.set_caption('Orbit')
+gameIcon = pygame.image.load('orbitIcon.png')
+pygame.display.set_icon(gameIcon)
 
 screen_width = 800
 screen_height = 600
@@ -121,6 +123,7 @@ def main():
             # update position every nth frame
             if sat.released == True:
                 if count == 10:
+                    print(sat.velocity)
                     sat.updatePosition()
                     sat.updateVelocity()
 
