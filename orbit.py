@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 
 pygame.init()
 pygame.display.set_caption('Orbit')
@@ -8,6 +9,8 @@ pygame.display.set_icon(gameIcon)
 
 screen_width = 800
 screen_height = 600
+G = 6.67428e-11
+sun_mass = 10e8
 
 # list for objects
 sat_ls = []
@@ -28,40 +31,37 @@ class Satellite:
         self.velocity = v
         self.radius = r
         self.point_ls = []
+        self.mass = 100000
         self.released = False
 
     def updatePosition(self):
-        new_x = self.x_pos + self.velocity[0] // 2
-        new_y = self.y_pos + self.velocity[1] // 2
+        new_x = self.x_pos + self.velocity[0] / 2
+        new_y = self.y_pos + self.velocity[1] / 2
         self.x_pos = new_x
         self.y_pos = new_y
 
     def updateVelocity(self):
-        change_in_x = 0
-        change_in_y = 0
-        if self.x_pos < screen_width // 2:
-            change_in_x = 1
-        elif self.x_pos > screen_width // 2:
-            change_in_x = -1
-        
-        if self.y_pos < screen_height // 2:
-            change_in_y = 1
-        elif self.y_pos > screen_height // 2:
-            change_in_y = -1
-    
-        self.velocity = (self.velocity[0] + change_in_x, self.velocity[1] + change_in_y)
+        # Compute the distance of the other body.
+        sx, sy = self.x_pos, self.y_pos
+        ox, oy = screen_width / 2, screen_height / 2
+        dx = (ox-sx)
+        dy = (oy-sy)
+        d = math.sqrt(dx**2 + dy**2)
+        if d == 0:
+            raise ValueError("Collision")
+        # Compute the force of attraction
+        f = G * self.mass * sun_mass / (d**2)
+
+        # Compute the direction of the force.
+        theta = math.atan2(dy, dx)
+        fx = math.cos(theta) * f
+        fy = math.sin(theta) * f
+        velocity = ((self.velocity[0] + fx, self.velocity[1] + fy))
+        self.velocity = velocity
+        return velocity
 
     def setVelocity(self, x_influence, y_influence):
-        if x_influence > 100:
-            x_influence = 100
-        elif x_influence < -100:
-            x_influence = -100
-        if y_influence > 100:
-            y_influence = 100
-        elif y_influence < -100:
-            y_influence = -100
-
-        self.velocity = (x_influence // 10, y_influence // 10)
+        self.velocity = (x_influence/10, y_influence/10)
 
 
 def main():
@@ -120,13 +120,21 @@ def main():
             count = 0
 
         for sat in sat_ls:
-            pygame.draw.circle(screen, (255,255,255), (sat.x_pos,sat.y_pos), sat.radius)
+            pygame.draw.circle(screen, (255,255,255), (int(sat.x_pos),int(sat.y_pos)), sat.radius)
 
             # update position every nth frame
             if sat.released == True:
                 if count == 10:
                     sat.updatePosition()
                     sat.updateVelocity()
+
+        #Text through GUI
+        if draw_line == True:
+            myFont = pygame.font.SysFont("Times New Roman", 18)
+
+            randNumLabel = myFont.render("Input Velocity: " +  str((line_start[0] - pygame.mouse.get_pos()[0],line_start[1] - pygame.mouse.get_pos()[1])), 1, (255,0,0))
+
+            screen.blit(randNumLabel, (0, 0))
 
         # Flip the display each frame
         pygame.display.flip()
