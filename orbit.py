@@ -13,7 +13,7 @@ screen_height = 600
 sat_ls = []
 stars_ls = []
 
-for x in range(random.randint(20,40)):
+for x in range(random.randint(100,200)):
     x_pos = random.randint(0,screen_width)
     y_pos = random.randint(0,screen_height)
     radius = random.randint(1,3)
@@ -87,13 +87,13 @@ def main():
                 line_start = (x,y)
                 draw_line = True
                 sat_ls.append(Satellite(x,y,(0,0), 5))
-                print("create obj")
+                print("create obj " + str(len(sat_ls)))
             elif event.type == pygame.MOUSEBUTTONUP:
                 x,y = event.pos
                 sat_ls[-1].setVelocity(line_start[0] - x,line_start[1] - y)
                 sat_ls[-1].released = True
                 draw_line = False
-                print("release obj")
+                print("release obj " + str(len(sat_ls)))
         
         # DRAWING
         # draw background
@@ -101,16 +101,18 @@ def main():
         # draw mouse indicator line
         if draw_line == True:
             pygame.draw.line(screen, (255,0,0), line_start, pygame.mouse.get_pos(), 2)
-        # draw sun
-        pygame.draw.circle(screen, (50,50,50), (screen_width // 2, screen_height // 2), sun_radius+(count % 10))
-        pygame.draw.circle(screen, (150,150,150), (screen_width // 2, screen_height // 2), sun_radius+(count % 5))
-        pygame.draw.circle(screen, (200,200,200), (screen_width // 2, screen_height // 2), sun_radius+(count % 2))
-        pygame.draw.circle(screen, (255,255,255), (screen_width // 2, screen_height // 2), sun_radius)
+
 
         # draw stars
         for star in stars_ls:
             pygame.draw.circle(screen, (150,150,150), (star[0],star[1]), star[2])
 
+        # draw sun
+        pygame.draw.circle(screen, (50,50,50), (screen_width // 2, screen_height // 2), sun_radius+(count % 10))
+        pygame.draw.circle(screen, (150,150,150), (screen_width // 2, screen_height // 2), sun_radius+(count % 5))
+        pygame.draw.circle(screen, (200,200,200), (screen_width // 2, screen_height // 2), sun_radius+(count % 2))
+        pygame.draw.circle(screen, (255,255,255), (screen_width // 2, screen_height // 2), sun_radius)
+        
         # draw sats
         if count < 11:
             count = count + 1
@@ -123,7 +125,6 @@ def main():
             # update position every nth frame
             if sat.released == True:
                 if count == 10:
-                    print(sat.velocity)
                     sat.updatePosition()
                     sat.updateVelocity()
 
