@@ -131,10 +131,18 @@ def main():
         #Text through GUI
         if draw_line == True:
             myFont = pygame.font.SysFont("Times New Roman", 18)
+            if pygame.mouse.get_pos() != line_start:
+                x_len = (line_start[0] - pygame.mouse.get_pos()[0])
+                y_len = (line_start[1] - pygame.mouse.get_pos()[1])
+                angle_r = math.atan2(y_len,x_len)
+                angle_d = math.degrees(angle_r)
+                
+                h_length = math.hypot(x_len, y_len)
 
-            randNumLabel = myFont.render("Input Velocity: " +  str((line_start[0] - pygame.mouse.get_pos()[0],line_start[1] - pygame.mouse.get_pos()[1])), 1, (255,0,0))
-
-            screen.blit(randNumLabel, (0, 0))
+                angleLabel = myFont.render("Input Angle: " +  str(round(angle_d)), 1, (255,0,0))
+                screen.blit(angleLabel, (0, 0))
+                velocityLabel = myFont.render("Input Velocity: " +  str(round(h_length)), 1, (255,0,0))
+                screen.blit(velocityLabel, (0, 20))
 
         # Flip the display each frame
         pygame.display.flip()
