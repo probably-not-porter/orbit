@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+import os
 
 pygame.init()
 pygame.display.set_caption('Orbit')
@@ -94,7 +95,6 @@ def main():
                 sat_ls[-1].released = True
                 draw_line = False
                 print("release obj " + str(len(sat_ls)))
-        
         # DRAWING
         # draw background
         screen.fill((0,0,0))
@@ -151,4 +151,4 @@ def main():
     pygame.quit()
 
 
-main()
+main() # start
