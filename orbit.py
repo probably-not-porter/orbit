@@ -141,7 +141,7 @@ def main():
             pygame.draw.circle(screen, (150,150,150), (star[0],star[1]), star[2])
         
         # draw sats
-        if count < 11:
+        if count < 3:
             count = count + 1
         else:
             count = 0
@@ -161,7 +161,7 @@ def main():
 
             # update position every nth frame
             if sat.released == True:
-                if count == 10:
+                if count == 0:
                     sat.updatePosition()
                     sat.velocity = sat.updateVelocity(sat.x_pos,sat.y_pos, sat.velocity, sat.mass)
         # draw sun
