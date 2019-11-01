@@ -1,5 +1,4 @@
-# <img src="orbitIcon.png" alt="drawing" width="40"/> orbit
-Just something fun I wrote in python while thinking about some gravity formulas.
-
-python@3.6.8
-pygame
+# <img src="orbitIcon.png" alt="drawing" width="40" style="margin-bottom: -5px"/> Orbit
+A simulation written in python using the pygame library.
+# Screenshots
+<img src="example.png" alt="drawing"/>
