@@ -11,7 +11,7 @@ def main():
     pygame.display.set_icon(gameIcon)
 
     G = 6.67428e-11
-    sun_mass = 10e7
+    sun_mass = 20e7
     screen_width = 1920
     screen_height = 1080
 
@@ -34,7 +34,8 @@ def main():
             self.velocity = v
             self.radius = r
             self.point_ls = []
-            self.mass = 0.05e7
+            self.predictions = []
+            self.mass = 0.5e7
             self.released = False
             self.dots = []
             self.dot_counter = 0
@@ -46,9 +47,9 @@ def main():
             self.x_pos = new_x
             self.y_pos = new_y
 
-        def updateVelocity(self):
+        def updateVelocity(self,self_x,self_y, velocity, mass):
             # Compute the distance of the other body.
-            sx, sy = self.x_pos, self.y_pos
+            sx, sy = self_x, self_y
             ox, oy = screen_width / 2, screen_height / 2
             dx = (ox-sx)
             dy = (oy-sy)
@@ -56,14 +57,13 @@ def main():
             if d == 0:
                 raise ValueError("Collision")
             # Compute the force of attraction
-            f = G * self.mass * sun_mass / (d**2)
+            f = G * mass * sun_mass / (d**2)
 
             # Compute the direction of the force.
             theta = math.atan2(dy, dx)
             fx = math.cos(theta) * f
             fy = math.sin(theta) * f
-            velocity = ((self.velocity[0] + fx, self.velocity[1] + fy))
-            self.velocity = velocity
+            velocity = ((velocity[0] + fx, velocity[1] + fy))
             return velocity
 
         def setVelocity(self, x_influence, y_influence):
@@ -118,6 +118,22 @@ def main():
         # draw mouse indicator line
         if draw_line == True:
             pygame.draw.line(screen, (255,0,0), line_start, pygame.mouse.get_pos(), 2)
+            
+            sat = sat_ls[-1]
+            pre_x = sat.x_pos
+            pre_y = sat.y_pos
+            vel = ((sat.velocity[0] + (sat.x_pos - pygame.mouse.get_pos()[0]) / 10), (sat.velocity[1] + (sat.y_pos - pygame.mouse.get_pos()[1]) / 10))
+            for x in range(20):
+                vel = sat.updateVelocity(pre_x,pre_y,vel,sat.mass)
+                new_x = pre_x + vel[0] / 2
+                new_y = pre_y + vel[1] / 2
+                pre_x = new_x
+                pre_y = new_y
+                print(pre_x, pre_y)
+                if x % 1 == 0:
+                    pygame.draw.circle(screen, (255,0,0), (int(pre_x),int(pre_y)), 1)
+
+
 
 
         # draw stars
@@ -132,7 +148,7 @@ def main():
 
         for sat in sat_ls:
             # draw dots
-            if sat.dot_counter == 50:
+            if sat.dot_counter == 3:
                 sat.createDot()
                 sat.dot_counter = 0
             else:
@@ -147,7 +163,7 @@ def main():
             if sat.released == True:
                 if count == 10:
                     sat.updatePosition()
-                    sat.updateVelocity()
+                    sat.velocity = sat.updateVelocity(sat.x_pos,sat.y_pos, sat.velocity, sat.mass)
         # draw sun
         pygame.draw.circle(screen, (50,50,50), (screen_width // 2, screen_height // 2), sun_radius+(count % 10))
         pygame.draw.circle(screen, (150,150,150), (screen_width // 2, screen_height // 2), sun_radius+(count % 5))
