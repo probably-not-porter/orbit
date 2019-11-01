@@ -11,7 +11,7 @@ pygame.display.set_icon(gameIcon)
 screen_width = 800
 screen_height = 600
 G = 6.67428e-11
-sun_mass = 10e8
+sun_mass = 10e7
 
 # list for objects
 sat_ls = []
@@ -32,8 +32,11 @@ class Satellite:
         self.velocity = v
         self.radius = r
         self.point_ls = []
-        self.mass = 100000
+        self.mass = 0.05e7
         self.released = False
+        self.dots = []
+        self.dot_counter = 0
+        self.color = random_color()
 
     def updatePosition(self):
         new_x = self.x_pos + self.velocity[0] / 2
@@ -63,6 +66,12 @@ class Satellite:
 
     def setVelocity(self, x_influence, y_influence):
         self.velocity = (x_influence/10, y_influence/10)
+    
+    def createDot(self):
+        newdot = [int(self.x_pos), int(self.y_pos)]
+        self.dots.append(newdot)
+        if len(self.dots) > 100:
+            self.dots.pop(0)
 
 
 def main():
@@ -71,6 +80,7 @@ def main():
     
     sun_radius = 20
     count = 0
+    dot_count = 0
     draw_line = False
     line_start = None
 
@@ -106,12 +116,6 @@ def main():
         # draw stars
         for star in stars_ls:
             pygame.draw.circle(screen, (150,150,150), (star[0],star[1]), star[2])
-
-        # draw sun
-        pygame.draw.circle(screen, (50,50,50), (screen_width // 2, screen_height // 2), sun_radius+(count % 10))
-        pygame.draw.circle(screen, (150,150,150), (screen_width // 2, screen_height // 2), sun_radius+(count % 5))
-        pygame.draw.circle(screen, (200,200,200), (screen_width // 2, screen_height // 2), sun_radius+(count % 2))
-        pygame.draw.circle(screen, (255,255,255), (screen_width // 2, screen_height // 2), sun_radius)
         
         # draw sats
         if count < 11:
@@ -120,13 +124,28 @@ def main():
             count = 0
 
         for sat in sat_ls:
-            pygame.draw.circle(screen, (255,255,255), (int(sat.x_pos),int(sat.y_pos)), sat.radius)
+            # draw dots
+            if sat.dot_counter == 50:
+                sat.createDot()
+                sat.dot_counter = 0
+            else:
+                sat.dot_counter = sat.dot_counter + 1
+            if len(sat.dots) > 1:
+                pygame.draw.lines(screen, sat.color, False, sat.dots, 1)
+
+            # draw sat
+            pygame.draw.circle(screen, sat.color, (int(sat.x_pos),int(sat.y_pos)), sat.radius)
 
             # update position every nth frame
             if sat.released == True:
                 if count == 10:
                     sat.updatePosition()
                     sat.updateVelocity()
+        # draw sun
+        pygame.draw.circle(screen, (50,50,50), (screen_width // 2, screen_height // 2), sun_radius+(count % 10))
+        pygame.draw.circle(screen, (150,150,150), (screen_width // 2, screen_height // 2), sun_radius+(count % 5))
+        pygame.draw.circle(screen, (200,200,200), (screen_width // 2, screen_height // 2), sun_radius+(count % 2))
+        pygame.draw.circle(screen, (255,255,255), (screen_width // 2, screen_height // 2), sun_radius)
 
         #Text through GUI
         if draw_line == True:
@@ -151,4 +170,13 @@ def main():
     pygame.quit()
 
 
+def random_color():
+    r = random.randint(100,255)
+    g = random.randint(100,255)
+    b = random.randint(100,255)
+    return (r,g,b)
+
+
+
 main() # start
+
