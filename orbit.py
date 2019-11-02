@@ -125,8 +125,8 @@ class Satellite:
         self.color = random_color()
 
     def updatePosition(self):
-        new_x = self.x_pos + (self.velocity[0] / 2)
-        new_y = self.y_pos + (self.velocity[1] / 2)
+        new_x = self.x_pos + (self.velocity[0] / 2) * timescale
+        new_y = self.y_pos + (self.velocity[1] / 2) * timescale
         self.x_pos = new_x
         self.y_pos = new_y
 
@@ -141,7 +141,7 @@ class Satellite:
             raise ValueError("Collision")
 
         # Compute the force of attraction
-        f = G * mass * sun_mass / (d**2)
+        f = G * timescale * mass * sun_mass / (d**2)
 
         # Compute the direction of the force.
         theta = math.atan2(dy, dx)
@@ -153,7 +153,7 @@ class Satellite:
         return velocity
 
     def setVelocity(self, x_influence, y_influence):
-        self.velocity = (x_influence/10, y_influence/10)
+        self.velocity = ((x_influence/timescale)/10*timescale, y_influence/timescale/10*timescale)
     
     def createDot(self):
         newdot = [int(self.x_pos), int(self.y_pos)]
@@ -173,7 +173,7 @@ creating_obj = False
 font = pygame.font.SysFont("Times New Roman", 18)
 
 sun_mass_slider = Slider("Sun Mass", 3e7, 10e7, 0.5e7, 25)
-timescale_slider = Slider("Timescale", 3, 10, 1, 150)
+timescale_slider = Slider("Timescale", 1.0, 3.0, 0.0, 150)
 
 slides.append(sun_mass_slider)
 slides.append(timescale_slider)
@@ -242,13 +242,13 @@ while running:
 
         for x in range(20):
             vel = sat.updateVelocity(pre_x,pre_y,vel,sat.mass)
-            new_x = pre_x + vel[0] / 2
-            new_y = pre_y + vel[1] / 2
+            new_x = pre_x + vel[0] / 2 * timescale
+            new_y = pre_y + vel[1] / 2 * timescale
             pre_x = new_x
             pre_y = new_y
 
             if x % 1 == 0:
-                pygame.draw.circle(screen, (255,0,0*timescale), (int(pre_x),int(pre_y)), 1)
+                pygame.draw.circle(screen, (255,0,0), (int(pre_x),int(pre_y)), 1)
 
 
 
@@ -258,7 +258,7 @@ while running:
         pygame.draw.circle(screen, (150,150,150), (star[0],star[1]), star[2])
     
     # draw sats
-    if count < timescale:
+    if count < 3:
         count = count + 1
     else:
         count = 0
