@@ -63,17 +63,17 @@ class Slider():
         self.mini = mini  # minimum at slider position left
         self.xpos = pos  # x-location on screen
         self.ypos = 30
-        self.surf = pygame.surface.Surface((100, 50))
+        self.surf = pygame.surface.Surface((200, 50))
         self.hit = False  # the hit attribute indicates slider movement due to mouse interaction
 
         self.txt_surf = font.render(name, 1, BLACK)
-        self.txt_rect = self.txt_surf.get_rect(center=(50, 15))
+        self.txt_rect = self.txt_surf.get_rect(center=(100, 15))
 
         # Static graphics - slider background #
         self.surf.fill((100, 100, 100))
-        pygame.draw.rect(self.surf, GREY, [0, 0, 100, 50], 3)
-        pygame.draw.rect(self.surf, ORANGE, [10, 10, 80, 10], 0)
-        pygame.draw.rect(self.surf, WHITE, [10, 30, 80, 5], 0)
+        pygame.draw.rect(self.surf, GREY, [0, 0, 200, 50], 3)
+        pygame.draw.rect(self.surf, ORANGE, [10, 5, 180, 20], 0)
+        pygame.draw.rect(self.surf, WHITE, [10, 30, 180, 5], 0)
 
         self.surf.blit(self.txt_surf, self.txt_rect)  # this surface never changes
 
@@ -92,7 +92,7 @@ class Slider():
         surf = self.surf.copy()
 
         # dynamic
-        pos = (10+int((self.val-self.mini)/(self.maxi-self.mini)*80), 33)
+        pos = (10+int((self.val-self.mini)/(self.maxi-self.mini)*180), 33)
         self.button_rect = self.button_surf.get_rect(center=pos)
         surf.blit(self.button_surf, self.button_rect)
         self.button_rect.move_ip(self.xpos, self.ypos)  # move of button box to correct screen position
@@ -104,7 +104,7 @@ class Slider():
         """
     The dynamic part; reacts to movement of the slider button.
     """
-        self.val = (pygame.mouse.get_pos()[0] - self.xpos - 10) / 80 * (self.maxi - self.mini) + self.mini
+        self.val = (pygame.mouse.get_pos()[0] - self.xpos - 10) / 180 * (self.maxi - self.mini) + self.mini
         if self.val < self.mini:
             self.val = self.mini
         if self.val > self.maxi:
@@ -170,10 +170,10 @@ draw_line = False # if the aiming line is being rendered
 line_start = None # if the aiming line is on, where it starts from (position of sat)
 creating_obj = False
 
-font = pygame.font.SysFont("Times New Roman", 18)
+font = pygame.font.SysFont("Times New Roman", 15)
 
 sun_mass_slider = Slider("Sun Mass", 3e7, 10e7, 0.5e7, 25)
-timescale_slider = Slider("Timescale", 1.0, 3.0, 0.0, 150)
+timescale_slider = Slider("Timescale", 1.0, 1.0, 0.01, 250)
 
 slides.append(sun_mass_slider)
 slides.append(timescale_slider)
@@ -240,7 +240,7 @@ while running:
         pre_y = sat.y_pos
         vel = ((sat.velocity[0] + (sat.x_pos - pygame.mouse.get_pos()[0]) / 10), (sat.velocity[1] + (sat.y_pos - pygame.mouse.get_pos()[1]) / 10))
 
-        for x in range(20):
+        for x in range(int(40/timescale)):
             vel = sat.updateVelocity(pre_x,pre_y,vel,sat.mass)
             new_x = pre_x + vel[0] / 2 * timescale
             new_y = pre_y + vel[1] / 2 * timescale
