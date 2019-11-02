@@ -29,6 +29,7 @@ sun_mass = 20e7 # mass of main body
 screen_width = 1920
 screen_height = 1080
 timescale = 1
+tracer_length = 100
 
 # some less important constants
 WHITE = (255, 255, 255)
@@ -61,8 +62,8 @@ class Slider():
         self.val = val  # start value
         self.maxi = maxi  # maximum at slider position right
         self.mini = mini  # minimum at slider position left
-        self.xpos = pos  # x-location on screen
-        self.ypos = 30
+        self.xpos = 30  # x-location on screen
+        self.ypos = pos
         self.surf = pygame.surface.Surface((200, 50))
         self.hit = False  # the hit attribute indicates slider movement due to mouse interaction
 
@@ -151,6 +152,8 @@ class Satellite:
         y_vel = (velocity[1] + fy)
         velocity = (x_vel,y_vel)
         return velocity
+        
+        #velocity = ((velocity[0] + math.cos(math.atan2(dy, dx)) * f),(velocity[1] + math.sin(math.atan2(dy, dx)) * f))
 
     def setVelocity(self, x_influence, y_influence):
         self.velocity = ((x_influence/timescale)/10*timescale, y_influence/timescale/10*timescale)
@@ -158,7 +161,7 @@ class Satellite:
     def createDot(self):
         newdot = [int(self.x_pos), int(self.y_pos)]
         self.dots.append(newdot)
-        if len(self.dots) > 100:
+        while len(self.dots) > tracer_length:
             self.dots.pop(0)
 
 # VARS
@@ -172,11 +175,13 @@ creating_obj = False
 
 font = pygame.font.SysFont("Times New Roman", 15)
 
-sun_mass_slider = Slider("Sun Mass", 3e7, 10e7, 0.5e7, 25)
-timescale_slider = Slider("Timescale", 1.0, 1.0, 0.01, 250)
+sun_mass_slider = Slider("Sun Mass: ", 3e7, 10e7, 0.5e7, 30)
+timescale_slider = Slider("Timescale: ", 1.0, 1.0, 0.01, 100)
+tracer_slider = Slider("Tracer Length: ", 100,500,0,170)
 
 slides.append(sun_mass_slider)
 slides.append(timescale_slider)
+slides.append(tracer_slider)
 
 
 # create game screen
@@ -231,6 +236,7 @@ while running:
     # update slider vars
     sun_mass = slides[0].val
     timescale = slides[1].val
+    tracer_length = slides[2].val
 
     # draw mouse indicator line
     if draw_line == True:
@@ -262,7 +268,21 @@ while running:
         count = count + 1
     else:
         count = 0
+    
+    # cull wandering objects
+    out_of_bounds = []
+    print(sat_ls)
+    for sat_ind in range(len(sat_ls)-1):
+        if abs(sat_ls[sat_ind].x_pos) > 10000:
+            sat_ls.pop(sat_ind)
+            sat_ind = sat_ind -1
+        if abs(sat_ls[sat_ind].y_pos) > 10000:
+            out_of_bounds
 
+    for i in sorted(out_of_bounds, reverse=True):
+        sat_ls.pop[i]
+
+    
     for sat in sat_ls:
         # draw dots
         if sat.dot_counter == 3:
@@ -296,12 +316,16 @@ while running:
             angle_r = math.atan2(y_len,x_len)
             angle_d = math.degrees(angle_r)
             h_length = math.hypot(x_len, y_len)
-
+            
             angleLabel = font.render("Input Angle: " +  str(round(angle_d)), 1, (255,0,0))
-            screen.blit(angleLabel, (0, 100))
+            screen.blit(angleLabel, (250, 50))
 
             velocityLabel = font.render("Input Velocity: " +  str(round(h_length)), 1, (255,0,0))
-            screen.blit(velocityLabel, (0, 120))
+            screen.blit(velocityLabel, (250, 70))
+
+    satLabel = font.render("Objects: " + str(len(sat_ls)),1,(255,0,0))
+    screen.blit(satLabel, (250,90))
+
     # Move slides
     for s in slides:
         if s.hit:
