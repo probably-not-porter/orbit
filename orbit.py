@@ -255,10 +255,7 @@ while running:
 
             if x % 1 == 0:
                 pygame.draw.circle(screen, (255,0,0), (int(pre_x),int(pre_y)), 1)
-
-
-
-
+                
     # draw stars
     for star in stars_ls:
         pygame.draw.circle(screen, (150,150,150), (star[0],star[1]), star[2])
@@ -271,7 +268,6 @@ while running:
     
     # cull wandering objects
     out_of_bounds = []
-    print(sat_ls)
     for sat_ind in range(len(sat_ls)-1):
         if abs(sat_ls[sat_ind].x_pos) > 10000:
             sat_ls.pop(sat_ind)
@@ -340,8 +336,3 @@ while running:
 
 # when while loop ends, exit game
 pygame.quit()
-
-
-
-
-
